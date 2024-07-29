@@ -11,64 +11,14 @@ vanna-app/
 │   ├── main.py
 │   ├── requirements.txt
 │   └── Dockerfile
+│   └── start.sh
+│   └── train_vanna.py
 └── data/
 │   ├── postgres/
 │   ├── temp/
-└── chroma.db
+└── sql/
+│   ├── create_user.sql
 ```
-
-## `docker-compose.yml`
-
-```yaml
-
-services:
-  postgres:
-    image: postgres:latest
-    container_name: postgres-container
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./data/postgres:/var/lib/postgresql/data
-      - ./data/temp:/tmp/shared
-    networks:
-      - vanna-net
-
-  chroma:
-    image: chromadb/chroma:latest
-    container_name: chroma-container
-    ports:
-      - "8000:8000"
-    networks:
-      - vanna-net
-
-  vanna:
-    build:
-      context: ./app
-      dockerfile: Dockerfile
-    container_name: vanna-container
-    environment:
-      DB_HOST: postgres-container
-      DB_PORT: 5432
-      DB_NAME: ${DB_NAME}
-      DB_USER: DB_USER
-      DB_PASSWORD: ${DB_PASSWORD}
-      CHROMA_HOST: ${CHROMA_HOST}
-      CHROMA_PORT: ${CHROMA_PORT}
-      MISTRAL_API_KEY: ${MISTRAL_API_KEY}
-    ports:
-      - "8080:8080"
-    networks:
-      - vanna-net
-
-networks:
-  vanna-net:
-    driver: bridge
-```
-
 
 ## 1. Construimos el entorno para la aplicación
 Clona el repositorio o crea la estructura de archivos manualmente.
@@ -79,8 +29,7 @@ Abra una consola del sistema operativo ejecuta el siguiente comando para constru
 docker compose up --build
 ```
 
-
-## 2. Cargar una base de datos
+## 2. Cargar la base de datos DVDRentals
 
 Este apartado está basado en [Load PostgreSQL Sample Database](https://www.postgresqltutorial.com/postgresql-getting-started/load-postgresql-sample-database/)
 
@@ -201,7 +150,6 @@ El símbolo del sistema cambiará a lo siguiente:
 dvdrental=#
 ```
 
-
 En tercer lugar, muestre todas las tablas en la base de datos de *dvdrental*:
 
 ```sh
@@ -209,21 +157,6 @@ En tercer lugar, muestre todas las tablas en la base de datos de *dvdrental*:
 ```
 
 
-## Primero construimos onstruir el entorno para la aplicación
+## 3. Abrir un navegador e introdución la URL:
+[localhost:8080](localhost:8080)
 
-Clona el repositorio o crea la estructura de archivos manualmente.
-Navega al directorio del proyecto.
-Ejecuta el siguiente comando para construir los contenedores:
-
-```sh 
-docker compose build
-```
-
-## 3. ejecutamos la aplicación:
-
-Para ejecutar la aplicacion:
-```sh
-docker compose up
-```
-
-Esto debería levantar los contenedores de Postgres, ChromaDB y Vanna, y ejecutar la aplicación en Python. La aplicación se conectará a la base de datos Postgres y utilizará Vanna para convertir consultas en lenguaje natural a SQL

@@ -30,14 +30,11 @@ class MyVanna(ChromaDB_VectorStore, Mistral):
         ChromaDB_VectorStore.__init__(self, config=config)
         Mistral.__init__(self, config={'api_key': MISTRAL_API_KEY, 'model': MISTRAL_MODEL})
 
-
 vn = MyVanna()
 
 vn.connect_to_postgres(host=DB_HOST, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD, port=DB_PORT)
 
 # ======= END VANNA SETUP =======
-
-
 
 my_question = st.session_state.get("my_question", default=None)
 
