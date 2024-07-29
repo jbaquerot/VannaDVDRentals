@@ -1,0 +1,6 @@
+psycopg2-binary
+chromadb
+streamlit
+mistralai
+postgres
+vanna

@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-container
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./data/temp:/tmp/shared
+    networks:
+      - vanna-net
+
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: chroma-container
+    ports:
+      - "8000:8000"
+    networks:
+      - vanna-net
+
+  vanna:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: vanna-container
+    environment:
+      DB_HOST: postgres-container
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      CHROMA_HOST: ${CHROMA_HOST}
+      CHROMA_PORT: ${CHROMA_PORT}
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY}
+    ports:
+      - "8080:8080"
+    networks:
+      - vanna-net
+
+networks:
+  vanna-net:
+    driver: bridge
