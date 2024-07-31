@@ -29,11 +29,11 @@ Abra una consola del sistema operativo ejecuta el siguiente comando para constru
 docker compose up --build
 ```
 
-## 2. Cargar la base de datos DVDRentals
+## 2. Cargar la base de datos *dvdrental* 
 
 Este apartado está basado en [Load PostgreSQL Sample Database](https://www.postgresqltutorial.com/postgresql-getting-started/load-postgresql-sample-database/)
 
-### 2.1 Create the dvdrental database
+### 2.1 Crear la base de datos *dvdrental* 
 
 *pg_restore* es una utilidad para restaurar una base de datos desde un archivo.
 
@@ -98,7 +98,7 @@ Cuarto, desconéctese del servidor PostgreSQL y salga de *psql* usando el comand
 \q
 ```
 
-### 2.2 Restore the sample database from a tar file
+### 2.2 Restaurar la base de datos de *dvdrental* desde un archivo tar
 
 Quinto, descargue la base de datos de muestra [dvdrental.zip](https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip) y extraiga el archivo tar en un directorio como './data/temp'.
 
@@ -133,7 +133,7 @@ Password:
 
 Tomará unos segundos cargar los datos almacenados en el archivo *dvdrental.tar* en la base de datos de *dvdrental*.
 
-### 2.3 Verifica la base de datos de ejemplo
+### 2.3 Verifica la base de datos *dvdrental* 
 
 Primero conecta a la PostgreSQL usando el comando *psql*
 ```sh
@@ -158,5 +158,37 @@ En tercer lugar, muestre todas las tablas en la base de datos de *dvdrental*:
 
 
 ## 3. Abrir un navegador e introdución la URL:
-[localhost:8080](localhost:8080)
+Si todo ha ido bien, pueder abrir un navegador e ir a [localhost:8080](localhost:8080)
+
+## 4. Algunas consultas de ejemplo
+
+```
+How many stores does it have?
+```
+
+También en español:
+```
+Cuantas tiendas hay?
+```
+
+```
+Can you show me the sales evolution?
+```
+```
+Can you show me the sales evolution month by month?
+```
+
+```
+Which movies are the top 10 most paid?
+```
+```
+Which are the top 10 actors who appear in the most movies?
+```
+
+## 5. Detener y eliminar los contenedores
+Cuando hayas acabado de hacer pruebas, puedes detener y eliminar los contenedores con
+```sh
+docker compose down
+```
+ 
 
