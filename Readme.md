@@ -33,7 +33,7 @@ sudo apt install git
 git clone https://github.com/jbaquerot/VannaDVDRentals.git
 
 # Navegar al directorio del repositorio
-cd vanna-app
+cd VannaDVDRentals
 
 # Verificar el estado del repositorio
 git status
@@ -56,7 +56,7 @@ Este apartado está basado en [Load PostgreSQL Sample Database](https://www.post
 
 Para crear una base de datos y cargar datos desde un archivo, siga estos pasos:
 
-Primero, abra otra consola del sistema y conéctese al contendor de PostgreSQL usando la herramienta *psql*:
+Primero, abra OTRA consola del sistema y conéctese al contendor de PostgreSQL usando la herramienta *psql*:
 
 ```sh
 docker exec -it postgres-container psql -U postgres
@@ -107,7 +107,7 @@ Tercero, desconéctese del servidor PostgreSQL y salga de *psql* usando el coman
 Cuarto, descargue la base de datos de muestra [dvdrental.zip](https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip) y extraiga el archivo tar en un directorio como './data/temp'. Puedes utilizar el comando *curl* como sigue:
 
 ```sh
-curl -o ./data/temp/dvdrental.zip https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip
+sudo curl -o ./data/temp/dvdrental.zip https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip
 ```
 
 Para verificar que el directorio se ha montado correctamente, puedes ejecutar un comando dentro del contenedor de PostgreSQL para listar los archivos en el directorio montado.
@@ -120,7 +120,7 @@ Esto debería mostrar los archivos en el directorio /var/lib/postgresql/data den
 
 Quinto, descomprime el fichero *dvdrental.zip*
 ```sh
-unzip /var/lib/postgreql/data/dvdrental.zip
+unzip sudo ./data/temp/dvdrental.zip -d ./data/temp
 ```
 
 Sexto, cargue la base de datos de dvdrental usando el comando pg_restore:
@@ -164,6 +164,17 @@ En tercer lugar, muestre todas las tablas en la base de datos de *dvdrental*:
 ```sh
 \dt
 ```
+
+Sal de postgres
+```sh
+\q
+```
+
+Luego hay que rearrancar los contenedores
+```sh
+docker compose restart
+```
+
 
 ## 3. Editar el fichero *.env*
 Tienes que editar el fichero *.env* con tu clave *MISTRAL_API_KEY*
