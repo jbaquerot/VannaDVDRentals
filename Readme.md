@@ -21,7 +21,24 @@ vanna-app/
 ```
 
 ## 1. Construimos el entorno para la aplicación
-Clona el repositorio o crea la estructura de archivos manualmente.
+Clona el repositorio /jbaquerot/VannaDVDRentals:
+```sh
+# Actualizar la lista de paquetes
+sudo apt update
+
+# Instalar Git
+sudo apt install git
+
+# Clonar el repositorio
+git clone https://github.com/jbaquerot/VannaDVDRentals.git
+
+# Navegar al directorio del repositorio
+cd vanna-app
+
+# Verificar el estado del repositorio
+git status
+```
+
 Navega al directorio del proyecto.
 Abra una consola del sistema operativo ejecuta el siguiente comando para construir los contenedores:
 
@@ -59,20 +76,7 @@ El símbolo del sistema se verá así:
 postgres=#
 ```
 
-En segundo lugar, cree una nueva base de datos llamada dvdrental usando la instrucción *CREATE DATABASE*:
-
-```sh
-CREATE DATABASE dvdrental;
-```
-
-Salida:
-
-```sh
-CREATE DATABASE
-```
-PostgreSQL creará una nueva base de datos llamada *dvdrental*.
-
-En tercer lugar, verifique la creación de la base de datos usando el comando *\l*. El comando *\l* mostrará todas las bases de datos en el servidor PostgreSQL:
+En segundo lugar, verifique que la base de datos *dvdrental* está creada usando el comando *\l*. El comando *\l* mostrará todas las bases de datos en el servidor PostgreSQL:
 
 ```sh
 \l
@@ -93,26 +97,31 @@ El resultado muestra que *dvdrental* está en la lista, lo que significa que ha 
 
 Tenga en cuenta que otras bases de datos como *postgres*, *template0* y *template1* son las bases de datos del sistema.
 
-Cuarto, desconéctese del servidor PostgreSQL y salga de *psql* usando el comando *quit*:
+Tercero, desconéctese del servidor PostgreSQL y salga de *psql* usando el comando *quit*:
 ```sh
 \q
 ```
 
 ### 2.2 Restaurar la base de datos de *dvdrental* desde un archivo tar
 
-Quinto, descargue la base de datos de muestra [dvdrental.zip](https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip) y extraiga el archivo tar en un directorio como './data/temp'.
-
-Para verificar que el directorio se ha montado correctamente, puedes ejecutar un comando dentro del contenedor de PostgreSQL para listar los archivos en el directorio montado.
+Cuarto, descargue la base de datos de muestra [dvdrental.zip](https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip) y extraiga el archivo tar en un directorio como './data/temp'. Puedes utilizar el comando *curl* como sigue:
 
 ```sh
-docker exec -it postgres-container ls -al /var/lib/postgresql/data
+curl -o ./data/temp/dvdrental.zip https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip
 ```
+
+Para verificar que el directorio se ha montado correctamente, puedes ejecutar un comando dentro del contenedor de PostgreSQL para listar los archivos en el directorio montado.
 
 ```sh
 docker exec -it postgres-container ls -al /tmp/shared
 ```
 
 Esto debería mostrar los archivos en el directorio /var/lib/postgresql/data dentro del contenedor, que deberían corresponder a los archivos en el directorio data/postgres en tu máquina local.
+
+Quinto, descomprime el fichero *dvdrental.zip*
+```sh
+unzip /var/lib/postgreql/data/dvdrental.zip
+```
 
 Sexto, cargue la base de datos de dvdrental usando el comando pg_restore:
 
@@ -156,11 +165,31 @@ En tercer lugar, muestre todas las tablas en la base de datos de *dvdrental*:
 \dt
 ```
 
+## 3. Editar el fichero *.env*
+Tienes que editar el fichero *.env* con tu clave *MISTRAL_API_KEY*
 
-## 3. Abrir un navegador e introdución la URL:
+```
+#Parámetros PostgreSQL
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=testVanna
+POSTGRES_DB=dvdrental
+POSTGRES_HOST=localhost  
+POSTGRES_PORT=5432
+
+#Parámetros CHROMA
+CHROMA_HOST=localhost
+CHROMA_PORT=8000
+
+#Parámetros API MISTRAL
+MISTRAL_API_KEY=<you-mistral-key>
+MISTRAL_MODEL=mistral-tiny
+```
+
+## 4. Abrir un navegador e introdución la URL:
 Si todo ha ido bien, pueder abrir un navegador e ir a [localhost:8080](localhost:8080)
 
-## 4. Algunas consultas de ejemplo
+## 5. Algunas consultas de ejemplo
+Aquí te dejo algunas consultas de prueba.
 
 ```
 How many stores does it have?
@@ -185,10 +214,35 @@ Which movies are the top 10 most paid?
 Which are the top 10 actors who appear in the most movies?
 ```
 
-## 5. Detener y eliminar los contenedores
+## 6. Detener y eliminar los contenedores
 Cuando hayas acabado de hacer pruebas, puedes detener y eliminar los contenedores con
 ```sh
-docker compose down
+# Detener y eliminar los contenedores
+docker-compose down
+
+# Eliminar todas las imágenes que no están en uso
+docker image prune -a
+
+# Eliminar todos los volúmenes que no están en uso
+docker volume prune
+
+# Eliminar todas las redes que no están en uso
+docker network prune
 ```
- 
+
+Después de ejecutar estos comandos, puedes verificar que todos los contenedores, imágenes, volúmenes y redes han sido eliminados:
+```sh
+# Verificar contenedores
+docker ps -a
+
+# Verificar imágenes
+docker images
+
+# Verificar volúmenes
+docker volume ls
+
+# Verificar redes
+docker network ls
+```
+
 
