@@ -120,7 +120,7 @@ Esto debería mostrar los archivos en el directorio /var/lib/postgresql/data den
 
 Quinto, descomprime el fichero *dvdrental.zip*
 ```sh
-unzip sudo ./data/temp/dvdrental.zip -d ./data/temp
+sudo unzip ./data/temp/dvdrental.zip -d ./data/temp
 ```
 
 Sexto, cargue la base de datos de dvdrental usando el comando pg_restore:
