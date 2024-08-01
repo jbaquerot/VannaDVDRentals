@@ -181,11 +181,11 @@ Tienes que editar el fichero *.env* con tu clave *MISTRAL_API_KEY*
 
 ```
 #Parámetros PostgreSQL
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=testVanna
-POSTGRES_DB=dvdrental
-POSTGRES_HOST=localhost  
-POSTGRES_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=testVanna
+DB_NAME=dvdrental
+DB_HOST=localhost  
+DB_PORT=5432
 
 #Parámetros CHROMA
 CHROMA_HOST=localhost
