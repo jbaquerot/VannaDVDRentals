@@ -43,7 +43,6 @@ Navega al directorio del proyecto.
 Abra una consola del sistema operativo ejecuta el siguiente comando para construir los contenedores:
 
 ```sh 
-cd VannaDVDRentals
 docker compose up --build
 ```
 
@@ -57,9 +56,10 @@ Este apartado está basado en [Load PostgreSQL Sample Database](https://www.post
 
 Para crear una base de datos y cargar datos desde un archivo, siga estos pasos:
 
-Primero, abra OTRA consola del sistema y conéctese al contendor de PostgreSQL usando la herramienta *psql*:
+Primero, abra **OTRA** consola del sistema y conéctese al contendor de PostgreSQL usando la herramienta *psql*:
 
 ```sh
+cd VannaDVDRentals
 docker exec -it postgres-container psql -U postgres
 ```
 
