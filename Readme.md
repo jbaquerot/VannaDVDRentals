@@ -43,6 +43,7 @@ Navega al directorio del proyecto.
 Abra una consola del sistema operativo ejecuta el siguiente comando para construir los contenedores:
 
 ```sh 
+cd VannaDVDRentals
 docker compose up --build
 ```
 
