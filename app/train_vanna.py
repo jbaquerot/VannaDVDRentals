@@ -63,15 +63,15 @@ def train_vanna():
     """)
 
     # Sometimes you may want to add documentation about your business terminology or definitions.
-    vn.train(documentation="the table actor – stores actor data including first name and last name.")
-    vn.train(documentation="the table film – stores film data such as title, release year, length, rating, etc.")
-    vn.train(documentation="the table film_actor – stores the relationships between films and actors.")
-    vn.train(documentation="the table category – stores film’s categories data.")
-    vn.train(documentation="the table film_category- stores the relationships between films and categories.")
-    vn.train(documentation="the tabel store – contains the store data including manager staff and address.")
+    vn.train(documentation="the table actor stores actor data including first name and last name.")
+    vn.train(documentation="the table film stores film data such as title, release year, length, rating, etc.")
+    vn.train(documentation="the table film_actor stores the relationships between films and actors.")
+    vn.train(documentation="the table category stores film’s categories data.")
+    vn.train(documentation="the table film_category stores the relationships between films and categories.")
+    vn.train(documentation="the tabel store contains the store data including manager staff and address.")
     vn.train(documentation="the table inventory – stores inventory data.")
     vn.train(documentation="the table rental – stores rental data.")
-    vn.train(documentation="the table payment – stores customer’s payments.")
+    vn.train(documentation="the table payment – stores customer’s payments. It can be used to calculate the sales")
     vn.train(documentation="the table staff – stores staff data.")
     vn.train(documentation="the table customer – stores customer data.")
     vn.train(documentation="the table address – stores address data for staff and customers")
@@ -81,6 +81,106 @@ def train_vanna():
 
 
      # You can also add SQL queries to your training data. This is useful if you have some queries already laying around. You can just copy and paste those from your editor to begin generating new SQL.
+    
+    question="How many stores does it have?"
+    sql = """
+        SELECT COUNT(DISTINCT(store_id)) AS num_stores 
+        FOM store
+        """
+    vn.train(question = question, sql=sql)
+
+    question = "Find the first names of all customers from the customer table"
+    sql = """
+        SELECT first_name FROM customer;
+    """
+    vn.train(question = question, sql=sql)
+
+    question = "return the full names and emails of all customers from the customer table"
+    sql = """
+        SELECT 
+            first_name || ' ' || last_name,
+            email
+        FROM 
+        customer;
+    """
+    vn.train(question = question, sql=sql)
+
+    question = "sort customers by their first names in ascending order"
+    sql = """
+        SELECT 
+            first_name, 
+            last_name 
+        FROM 
+            customer 
+        ORDER BY 
+            first_name ASC;
+    """
+    vn.train(question = question, sql=sql)
+
+    question = "get customer_id, first_name and last_name for each payment from the customer table"
+    sql = """
+        SELECT 
+            customer.customer_id, 
+            customer.first_name, 
+            customer.last_name, 
+            payment.amount, 
+            payment.payment_date 
+        FROM 
+            customer 
+        INNER JOIN payment ON payment.customer_id = customer.customer_id 
+        ORDER BY 
+            payment.payment_date;
+    """
+    vn.train(question = question, sql=sql)
+
+
+    question = "retrieve the total payment paid by each customer"
+    sql = """
+        SELECT 
+            customer_id, 
+            SUM (amount) 
+        FROM 
+            payment 
+        GROUP BY 
+            customer_id 
+        ORDER BY 
+            customer_id;
+    """
+    vn.train(question = question, sql=sql)
+
+
+    question = "retrieve the total payment for each customer and display the customer name and amount"
+    sql = """
+        SELECT 
+            first_name || ' ' || last_name full_name, 
+            SUM (amount) amount 
+        FROM 
+            payment 
+        INNER JOIN customer USING (customer_id) 
+        GROUP BY 
+            full_name 
+        ORDER BY 
+            amount DESC;        
+    """
+    vn.train(question = question, sql=sql)
+
+    question = "select the only customers who have been spending more than 200"
+    sql = """
+        SELECT 
+            customer_id, 
+            SUM (amount) amount 
+        FROM 
+            payment 
+        GROUP BY 
+            customer_id 
+        HAVING 
+            SUM (amount) > 200 
+        ORDER BY 
+            amount DESC;       
+    """
+    vn.train(question = question, sql=sql)
+
+
     question = "What is the film more rental in 2005?"
     sql = """
         SELECT f.title, COUNT(*) AS total_rentals 

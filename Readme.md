@@ -171,12 +171,6 @@ Sal de postgres
 \q
 ```
 
-Luego hay que rearrancar los contenedores
-```sh
-docker compose restart
-```
-
-
 ## 3. Editar el fichero *.env*
 Tienes que editar el fichero *.env* con tu clave *MISTRAL_API_KEY*
 
@@ -196,6 +190,16 @@ CHROMA_PORT=8000
 MISTRAL_API_KEY=<you-mistral-key>
 MISTRAL_MODEL=mistral-tiny
 ```
+
+Luego hay que parar 
+```sh
+docker compose down
+```
+y rearrancar los contenedores
+```sh
+docker compose up --buld
+```
+
 
 ## 4. Abrir un navegador e introdución la URL:
 Si todo ha ido bien, pueder abrir un navegador e ir a [localhost:8080](localhost:8080)
