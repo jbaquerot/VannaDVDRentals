@@ -197,7 +197,7 @@ docker compose down
 ```
 y rearrancar los contenedores
 ```sh
-docker compose up --buld
+docker compose up --build
 ```
 
 
@@ -261,7 +261,7 @@ docker volume ls
 docker network ls
 ```
 
-## 7. Limpiar completamente tu entorno de Docker
+## 7. impiar completamente tu entorno de Docker
 Para tener una instalación de Docker totalmente nueva, sin imágenes ni contenedores, puedes seguir estos pasos para limpiar completamente tu entorno de Docker. Esto te permitirá probar una nueva instalación sin tener que reinstalar Docker.
 
 ```sh
