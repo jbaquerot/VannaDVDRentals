@@ -261,4 +261,43 @@ docker volume ls
 docker network ls
 ```
 
+## 7. Limpiar completamente tu entorno de Docker
+Para tener una instalación de Docker totalmente nueva, sin imágenes ni contenedores, puedes seguir estos pasos para limpiar completamente tu entorno de Docker. Esto te permitirá probar una nueva instalación sin tener que reinstalar Docker.
 
+```sh
+# Detener y eliminar todos los contenedores
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+
+# Eliminar todas las imágenes
+docker rmi $(docker images -a -q)
+
+# Eliminar todos los volúmenes
+docker volume prune -f
+
+# Eliminar todas las redes
+docker network prune -f
+
+# Eliminar todos los contenedores detenidos
+docker container prune -f
+
+# Eliminar todos los objetos no utilizados
+docker system prune -a -f
+```
+
+### 7.1 Verificación
+
+Después de ejecutar estos comandos, puedes verificar que todos los contenedores, imágenes, volúmenes y redes han sido eliminados:
+```sh
+# Verificar contenedores
+docker ps -a
+
+# Verificar imágenes
+docker images
+
+# Verificar volúmenes
+docker volume ls
+
+# Verificar redes
+docker network ls
+```
