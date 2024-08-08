@@ -69,14 +69,14 @@ def train_vanna():
     vn.train(documentation="the table category stores film’s categories data.")
     vn.train(documentation="the table film_category stores the relationships between films and categories.")
     vn.train(documentation="the tabel store contains the store data including manager staff and address.")
-    vn.train(documentation="the table inventory – stores inventory data.")
-    vn.train(documentation="the table rental – stores rental data.")
-    vn.train(documentation="the table payment – stores customer’s payments. It can be used to calculate the sales")
-    vn.train(documentation="the table staff – stores staff data.")
-    vn.train(documentation="the table customer – stores customer data.")
-    vn.train(documentation="the table address – stores address data for staff and customers")
-    vn.train(documentation="the table city – stores city names")
-    vn.train(documentation="the table country – stores country names.")
+    vn.train(documentation="the table inventory: stores inventory data, film_id, store_id.")
+    vn.train(documentation="the table rental: stores rental date, inventory_id, customer_id, return date.")
+    vn.train(documentation="the table payment: stores customer’s payments, payment date. It can be used to calculate the sales. ")
+    vn.train(documentation="the table staff: stores staff first name, last name, address_id, email, store_id where belongs, username and password")
+    vn.train(documentation="the table customer: stores customer first name, last name, email, address_id, if the customer is active or not, creation date.")
+    vn.train(documentation="the table address: stores address data for staff and customers")
+    vn.train(documentation="the table city: stores city names and the country_id that belongs")
+    vn.train(documentation="the table country: stores country names.")
 
 
 
