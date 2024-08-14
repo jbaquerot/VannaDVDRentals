@@ -28,9 +28,6 @@ conn = psycopg2.connect(
     password=DB_PASSWORD
 )
 
-# Conexión a ChromaDB
-#chroma_client = chromadb.Client(host=CHROMA_HOST, port=CHROMA_PORT)
-
 # Inicialización de VannaClient
 class MyVanna(ChromaDB_VectorStore, Mistral):
     def __init__(self, config=None):
@@ -147,7 +144,6 @@ def train_vanna():
             customer_id;
     """
     vn.train(question = question, sql=sql)
-
 
     question = "retrieve the total payment for each customer and display the customer name and amount"
     sql = """
