@@ -1,2 +1,5 @@
 venv
 /data
+/.vscode
+/.venv
+VannaDVDRentals.code-workspace
