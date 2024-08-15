@@ -1,5 +1,24 @@
 import os
 import psycopg2
+from streamlit import get_report_ctx
+from streamlit.server.server import Server
+
+class SessionState:
+    def __init__(self, **kwargs):
+        for key, val in kwargs.items():
+            setattr(self, key, val)
+
+def get_session_state():
+    session_id = get_report_ctx().session_id
+    session_info = Server.get_current()._get_session_info(session_id)
+
+    if session_info is None:
+        raise RuntimeError("Couldn't get your Streamlit Session object.")
+
+    return session_info.session
+
+session_state = get_session_state()
+
 import chromadb
 import streamlit as st
 
@@ -38,6 +57,9 @@ vn.connect_to_postgres(host=DB_HOST, dbname=DB_NAME, user=DB_USER, password=DB_P
 
 my_question = st.session_state.get("my_question", default=None)
 
+if "conversation" not in session_state:
+    session_state.conversation = []
+
 if my_question is None:
     my_question = st.text_input(
         "Ask me a question about your data",
@@ -45,17 +67,17 @@ if my_question is None:
     )
 else:
     st.text(my_question)
+    session_state.conversation.append(("User", my_question))
 
     sql = vn.generate_sql(my_question)
-
-    st.text(sql)
-
-    df = vn.run_sql(sql)    
-        
-    st.dataframe(df, use_container_width=True)
-
+    df = vn.run_sql(sql)
     code = vn.generate_plotly_code(question=my_question, sql=sql, df=df)
-
     fig = vn.get_plotly_figure(plotly_code=code, df=df)
 
-    st.plotly_chart(fig, use_container_width=True)
+    session_state.conversation.append(("Bot", fig))
+
+    for role, message in session_state.conversation:
+        st.text(f"{role}: {message}")
+
+
+
