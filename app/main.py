@@ -25,10 +25,11 @@ MISTRAL_MODEL = os.getenv('MISTRAL_MODEL')
 from vanna.chromadb import ChromaDB_VectorStore
 from vanna.mistral import Mistral
 
+# Inicialización de VannaClient
 class MyVanna(ChromaDB_VectorStore, Mistral):
     def __init__(self, config=None):
         ChromaDB_VectorStore.__init__(self, config=config)
-        Mistral.__init__(self, config={'api_key': MISTRAL_API_KEY, 'model': 'mistral-tiny'})
+        Mistral.__init__(self, config={'api_key': MISTRAL_API_KEY, 'model': MISTRAL_MODEL})
 
 vn = MyVanna()
 

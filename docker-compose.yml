@@ -38,6 +38,8 @@ services:
       MISTRAL_API_KEY: ${MISTRAL_API_KEY}
     ports:
       - "8080:8080"
+    depends_on:
+      - postgres
     networks:
       - vanna-net
 

@@ -1,303 +1,238 @@
-# Vanna App
 
-Esta aplicación en Python utiliza la librería `vanna.ai` para hacer consultas SQL en lenguaje natural, utilizando el modelo Mistral via Mistral API y la base de datos vectorial ChromaDB. Todo esto está disponible en contenedores Docker utilizando Docker Compose y funciona tanto en Windows como en MacOS. Además, Vanna se conecta a una base de datos Postgres de ejemplo ([DVDRentals](https://www.postgresqltutorial.com/postgresql-getting-started/postgresql-sample-database/)) que se está ejecutando en un contenedor Docker en local.
+# Project Vanna DVDRentals
 
-## Estructura del Proyecto
-```
-vanna-app/
-│
-├── docker-compose.yml
-├── app/
-│   ├── main.py
-│   ├── requirements.txt
-│   └── Dockerfile
-│   └── start.sh
-│   └── train_vanna.py
-└── data/
-│   ├── postgres/
-│   ├── temp/
-└── sql/
-│   ├── create_user.sql
-```
+This project is a comprehensive test and demonstration of the Vanna.ai library. The project involves setting up a PostgreSQL database using data from the DVDRentals application. This database is then utilized by a Python application that is containerized and managed using Docker and Docker Compose. The primary goal of this project is to showcase the capabilities of the Vanna.ai library in a real-world application scenario.
 
-## 1. Construimos el entorno para la aplicación
-Clona el repositorio /jbaquerot/VannaDVDRentals:
-```sh
-# Actualizar la lista de paquetes
-sudo apt update
 
-# Instalar Git
-sudo apt install git
+## Table of Contents
 
-# Clonar el repositorio
-git clone https://github.com/jbaquerot/VannaDVDRentals.git
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Files](#files)
+- [Contributing](#contributing)
+- [License](#license)
 
-# Navegar al directorio del repositorio
-cd VannaDVDRentals
+## Prerequisites
 
-# Verificar el estado del repositorio
-git status
-```
+Before you begin, ensure you have met the following requirements:
 
-Navega al directorio del proyecto.
-Abra una consola del sistema operativo ejecuta el siguiente comando para construir los contenedores:
+- Docker and Docker Compose installed on your machine.
+- Git installed on your machine.
 
-```sh 
-docker compose up --build
-```
+## Installation
 
-## 2. Cargar la base de datos *dvdrental* 
+1. **Clone the repository**:
+   ```sh
+   git clone https://github.com/jbaquerot/VannaDVDRentals
+   cd VannaDVDRentals
+   ```
 
-Este apartado está basado en [Load PostgreSQL Sample Database](https://www.postgresqltutorial.com/postgresql-getting-started/load-postgresql-sample-database/)
+2. **Create a `.env` file**:
+   - Create a `.env` file in the root of the project with the following content:
+     ```env
+     DB_USER=your_db_user
+     DB_PASSWORD=your_db_password
+     DB_NAME=your_db_name
+     CHROMA_HOST=chroma-container
+     CHROMA_PORT=8000
+     MISTRAL_API_KEY=your_api_key
+     MISTRAL_MODEL=mistral-tiny
+     ```
 
-### 2.1 Crear la base de datos *dvdrental* 
+3. **Build and run the Docker containers**:
+   ```sh
+   docker-compose up --build
+   ```
 
-*pg_restore* es una utilidad para restaurar una base de datos desde un archivo.
+## Configuration
 
-Para crear una base de datos y cargar datos desde un archivo, siga estos pasos:
+### `.env` File
 
-Primero, abra **OTRA** consola del sistema y conéctese al contendor de PostgreSQL usando la herramienta *psql*:
+The `.env` file contains environment variables used by the Docker containers. Here is an example:
 
-```sh
-cd VannaDVDRentals
-docker exec -it postgres-container psql -U postgres
-```
-
-Es posible que le pida que ingrese una contraseña para el usuario de Postgres:
-```sh
-Password for user postgres:
-```
-
-La contraseña del usuario de Postgres es la que ingresó durante la instalación de PostgreSQL.
-
-Después de ingresar la contraseña correctamente, se conectará al servidor PostgreSQL.
-
-El símbolo del sistema se verá así:
-```sh
-postgres=#
-```
-
-En segundo lugar, verifique que la base de datos *dvdrental* está creada usando el comando *\l*. El comando *\l* mostrará todas las bases de datos en el servidor PostgreSQL:
-
-```sh
-\l
-```
-Salida:
-
-List of databases
-
-|   Name    |  Owner   | Encoding | Locale Provider |          Collate           |           Ctype            | ICU Locale | ICU Rules |   Access privileges
------------|----------|----------|-----------------|----------------------------|----------------------------|------------|-----------|-----------------------
- dvdrental | postgres | UTF8     | libc            | English_United States.1252 | English_United States.1252 |            |           |
- postgres  | postgres | UTF8     | libc            | English_United States.1252 | English_United States.1252 |            |           |
- template0 | postgres | UTF8     | libc            | English_United States.1252 | English_United States.1252 |            |           | =c/postgres+postgres=CTc/postgres
- template1 | postgres | UTF8     | libc            | English_United States.1252 | English_United States.1252 |            |           | =c/postgres+postgres=CTc/postgres
-(4 rows)
-
-El resultado muestra que *dvdrental* está en la lista, lo que significa que ha creado la base de datos *dvdrental* correctamente.
-
-Tenga en cuenta que otras bases de datos como *postgres*, *template0* y *template1* son las bases de datos del sistema.
-
-Tercero, desconéctese del servidor PostgreSQL y salga de *psql* usando el comando *quit*:
-```sh
-\q
-```
-
-### 2.2 Restaurar la base de datos de *dvdrental* desde un archivo tar
-
-Cuarto, descargue la base de datos de muestra [dvdrental.zip](https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip) y extraiga el archivo tar en un directorio como './data/temp'. Puedes utilizar el comando *curl* como sigue:
-
-```sh
-sudo curl -o ./data/temp/dvdrental.zip https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip
-```
-
-Para verificar que el directorio se ha montado correctamente, puedes ejecutar un comando dentro del contenedor de PostgreSQL para listar los archivos en el directorio montado.
-
-```sh
-docker exec -it postgres-container ls -al /tmp/shared
-```
-
-Esto debería mostrar los archivos en el directorio /var/lib/postgresql/data dentro del contenedor, que deberían corresponder a los archivos en el directorio data/postgres en tu máquina local.
-
-Quinto, descomprime el fichero *dvdrental.zip*
-```sh
-sudo unzip ./data/temp/dvdrental.zip -d ./data/temp
-```
-
-Sexto, cargue la base de datos de dvdrental usando el comando pg_restore:
-
-```sh
-docker exec -it postgres-container pg_restore -U postgres -d dvdrental /tmp/shared/dvdrental.tar
-```
-
-En este comando:
-
-*-U postgres* indica a *pg_restore* que conecte el servidor PostgreSQL utilizando el usuario de postgres.
-
-*-d dvdrental* especifica la base de datos de destino que se cargará.
-Le pedirá que ingrese la contraseña del usuario de Postgres. Ingrese la contraseña del usuario de postgres y presione Enter (o la tecla Return):
-
-```sh
-Password:
-```
-
-Tomará unos segundos cargar los datos almacenados en el archivo *dvdrental.tar* en la base de datos de *dvdrental*.
-
-### 2.3 Verifica la base de datos *dvdrental* 
-
-Primero conecta a la PostgreSQL usando el comando *psql*
-```sh
-docker exec -it postgres-container psql -U postgres
-```
-Segundo, cambia de base de datos actual a *dvdrental*:
-
-```sh
-\c dvdrental
-```
-
-El símbolo del sistema cambiará a lo siguiente:
-```sh
-dvdrental=#
-```
-
-En tercer lugar, muestre todas las tablas en la base de datos de *dvdrental*:
-
-```sh
-\dt
-```
-
-Sal de postgres
-```sh
-\q
-```
-
-## 3. Editar el fichero *.env*
-Tienes que editar el fichero *.env* con tu clave *MISTRAL_API_KEY*
-
-```
-#Parámetros PostgreSQL
-DB_USER=postgres
-DB_PASSWORD=testVanna
-DB_NAME=dvdrental
-DB_HOST=localhost  
-DB_PORT=5432
-
-#Parámetros CHROMA
-CHROMA_HOST=localhost
+```env
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_NAME=your_db_name
+CHROMA_HOST=chroma-container
 CHROMA_PORT=8000
-
-#Parámetros API MISTRAL
-MISTRAL_API_KEY=<you-mistral-key>
+MISTRAL_API_KEY=your_api_key
 MISTRAL_MODEL=mistral-tiny
 ```
 
-Luego hay que parar 
+### `docker-compose.yml`
+
+The `docker-compose.yml` file defines the services that will be run using Docker Compose. Here is an example:
+
+```yaml
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-container
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./data/temp:/tmp/shared
+    networks:
+      - vanna-net
+
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: chroma-container
+    ports:
+      - "8000:8000"
+    networks:
+      - vanna-net
+
+  vanna:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: vanna-container
+    environment:
+      DB_HOST: postgres-container
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      CHROMA_HOST: ${CHROMA_HOST}
+      CHROMA_PORT: ${CHROMA_PORT}
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - vanna-net
+
+networks:
+  vanna-net:
+    driver: bridge
+```
+
+### `Dockerfile`
+
+The `Dockerfile` defines the environment for the Python application. Here is an example:
+
+```Dockerfile
+# Use a base image of Python 3.10
+FROM python:3.10-slim
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the requirements.txt file to the container
+COPY requirements.txt requirements.txt
+
+# Install the dependencies specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install additional dependencies for the initialization script
+RUN apt-get update && apt-get install -y curl unzip postgresql-client
+
+# Copy the initialization script to the container
+COPY setup_db.sh /app/setup_db.sh
+COPY wait-for-postgres.sh /app/wait-for-postgres.sh
+
+# Give execute permissions to the initialization scripts
+RUN chmod +x /app/setup_db.sh /app/wait-for-postgres.sh
+
+# Copy the rest of the application files to the container
+COPY . .
+
+# Specify the command to run the initialization script and then the application
+CMD ["sh", "-c", "/app/wait-for-postgres.sh postgres-container && /app/setup_db.sh && sh start.sh"]
+```
+
+### `setup_db.sh`
+
+The `setup_db.sh` script initializes the PostgreSQL database with data from a remote repository. Here is an example:
+
 ```sh
-docker compose down
-```
-y rearrancar los contenedores
-```sh
-docker compose up --build
-```
+#!/bin/bash
 
+# Environment variables
+DB_USER=${DB_USER:-postgres}
+DB_PASSWORD=${DB_PASSWORD:-postgres}
+DB_NAME=${DB_NAME:-dvdrental}
+DB_HOST=${DB_HOST:-postgres-container}
+DB_PORT=${DB_PORT:-5432}
 
-## 4. Abrir un navegador e introdución la URL:
-Si todo ha ido bien, pueder abrir un navegador e ir a [localhost:8080](localhost:8080)
+# Download the backup file
+BACKUP_URL="https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip"
+BACKUP_FILE="dvdrental.zip"
+EXTRACTED_FILE="dvdrental.tar"
 
-## 5. Algunas consultas de ejemplo
-Aquí te dejo algunas consultas de prueba.
+# Download the backup file
+echo "Downloading the backup file..."
+curl -o $BACKUP_FILE $BACKUP_URL
 
-```
-How many stores does it have?
-```
+# Unzip the backup file
+echo "Unzipping the backup file..."
+unzip $BACKUP_FILE
 
-También en español:
-```
-Cuantas tiendas hay?
-```
+# Create the database
+echo "Creating the database $DB_NAME..."
+PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -c "CREATE DATABASE $DB_NAME;"
 
-```
-Can you show me the sales evolution?
-```
-```
-Can you show me the sales evolution month by month?
-```
+# Load the data into the database
+echo "Loading the data into the database $DB_NAME..."
+PGPASSWORD=$DB_PASSWORD pg_restore -h $DB_HOST -U $DB_USER -d $DB_NAME -v $EXTRACTED_FILE
 
-```
-Which movies are the top 10 most paid?
-```
-```
-Which are the top 10 actors who appear in the most movies?
+echo "Database $DB_NAME created and loaded successfully."
 ```
 
-## 6. Detener y eliminar los contenedores
-Cuando hayas acabado de hacer pruebas, puedes detener y eliminar los contenedores con
-```sh
-# Detener y eliminar los contenedores
-docker-compose down
+### `wait-for-postgres.sh`
 
-# Eliminar todas las imágenes que no están en uso
-docker image prune -a
-
-# Eliminar todos los volúmenes que no están en uso
-docker volume prune
-
-# Eliminar todas las redes que no están en uso
-docker network prune
-```
-
-Después de ejecutar estos comandos, puedes verificar que todos los contenedores, imágenes, volúmenes y redes han sido eliminados:
-```sh
-# Verificar contenedores
-docker ps -a
-
-# Verificar imágenes
-docker images
-
-# Verificar volúmenes
-docker volume ls
-
-# Verificar redes
-docker network ls
-```
-
-## 7. impiar completamente tu entorno de Docker
-Para tener una instalación de Docker totalmente nueva, sin imágenes ni contenedores, puedes seguir estos pasos para limpiar completamente tu entorno de Docker. Esto te permitirá probar una nueva instalación sin tener que reinstalar Docker.
+The `wait-for-postgres.sh` script waits for the PostgreSQL server to be ready before running the initialization script. Here is an example:
 
 ```sh
-# Detener y eliminar todos los contenedores
-docker stop $(docker ps -a -q)
-docker rm $(docker ps -a -q)
+#!/bin/bash
+set -e
 
-# Eliminar todas las imágenes
-docker rmi $(docker images -a -q)
+host="$1"
+shift
+cmd="$@"
 
-# Eliminar todos los volúmenes
-docker volume prune -f
+until PGPASSWORD=$DB_PASSWORD psql -h "$host" -U "$DB_USER" -c '\q'; do
+  >&2 echo "Postgres is unavailable - sleeping"
+  sleep 1
+done
 
-# Eliminar todas las redes
-docker network prune -f
-
-# Eliminar todos los contenedores detenidos
-docker container prune -f
-
-# Eliminar todos los objetos no utilizados
-docker system prune -a -f
+>&2 echo "Postgres is up - executing command"
+exec $cmd
 ```
 
-### 7.1 Verificación
+## Usage
 
-Después de ejecutar estos comandos, puedes verificar que todos los contenedores, imágenes, volúmenes y redes han sido eliminados:
-```sh
-# Verificar contenedores
-docker ps -a
+1. **Start the application**:
+   ```sh
+   docker-compose up --build
+   ```
 
-# Verificar imágenes
-docker images
+2. **Access the application**:
+   - The application will be available at `http://localhost:8080`.
 
-# Verificar volúmenes
-docker volume ls
+## Contributing
 
-# Verificar redes
-docker network ls
-```
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+
+## Contact
+
+José Carlos Baquero
+
+Project Link: [https://github.com/jbaquerot/VannaDVDRentals](https://github.com/jbaquerot/VannaDVDRentals)

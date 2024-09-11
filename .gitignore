@@ -1,5 +1,5 @@
-venv
 /data
 /.vscode
-/.venv
+/bck
 VannaDVDRentals.code-workspace
+.env
