@@ -17,7 +17,6 @@ CHROMA_PORT = os.getenv('CHROMA_PORT')
 
 # Configuración de Mistral API
 MISTRAL_API_KEY = os.getenv('MISTRAL_API_KEY')
-MISTRAL_MODEL = os.getenv('MISTRAL_MODEL')
 
 # Conexión a la base de datos Postgres
 conn = psycopg2.connect(
@@ -32,9 +31,9 @@ conn = psycopg2.connect(
 class MyVanna(ChromaDB_VectorStore, Mistral):
     def __init__(self, config=None):
         ChromaDB_VectorStore.__init__(self, config=config)
-        Mistral.__init__(self, config={'api_key': MISTRAL_API_KEY, 'model': MISTRAL_MODEL})
+        Mistral.__init__(self, config = config)
 
-vn = MyVanna()
+vn = MyVanna(config={'api_key': MISTRAL_API_KEY, 'model': 'mistral-tiny'})
 
 vn.connect_to_postgres(host=DB_HOST, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD, port=DB_PORT)
 
