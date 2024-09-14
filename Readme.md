@@ -220,6 +220,69 @@ exec $cmd
 2. **Access the application**:
    - The application will be available at `http://localhost:8080`.
 
+3. **Some sample queries Here are some sample queries.**
+
+``` How many stores do you have?``` 
+Also in Spanish: 
+``` ¿Cuantas tiendas hay?``` 
+``` Can you show me the evolution of sales?``` 
+``` Can you show me the evolution of sales month by month?``` 
+``` Which movies are the 10 highest paid?``` 
+``` Which are the 10 actors who appear in the most movies?``` 
+
+4. **Stop and remove containers When you are done testing, you can stop and remove containers with**
+``` sh
+# Stop and remove containers
+docker-compose down
+
+# Remove all unused images
+docker image prune -a
+
+# Remove all unused volumes
+docker volume prune
+
+# Remove all unused networks
+docker network prune
+```
+
+5. **After running these commands, you can verify that all containers, images, volumes, and networks have been removed:**
+```sh
+# Check containers
+docker ps -a
+
+# Check images
+docker images
+
+# Check volumes
+docker volume ls
+
+# Check networks
+docker network ls
+```
+7. **Completely clean your Docker environment**
+To have a completely fresh Docker installation, without images or containers, you can follow these steps to completely clean your Docker environment. This will allow you to try a fresh installation without having to reinstall Docker.
+
+```sh
+# Stop and remove all containers
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+
+# Remove all images
+docker rmi $(docker images -a -q)
+
+# Remove all volumes
+docker volume prune -f
+
+# Remove all networks
+docker network prune -f
+
+# Remove all stopped containers
+docker container prune -f
+
+# Remove all unused objects
+docker system prune -a -f
+```
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
